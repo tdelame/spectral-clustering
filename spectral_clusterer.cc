@@ -282,12 +282,53 @@ BEGIN_PROJECT_NAMESPACE
     m_number_of_neighbors{ 5 }, m_number_of_clusters{ 3 }
   {}
 
+  similarity_graph::link::link()
+    : n1{0}, n2{0}, weight{0}
+  {}
+
+  similarity_graph::link::link( size_t n1, size_t n2, real w )
+    : n1{n1}, n2{n2}, weight{w}
+  {}
+
+
+  spectral_clusterer::spectral_clusterer(
+      similarity_graph& graph,
+      const parameters& params)
+  : m_input{ nullptr }, m_n{ graph.m_node_number }, m_d{ 0 },
+    m_params{ params }, m_weights( m_n, m_n ), m_diagonal( m_n, 0 ),
+    m_eigenvectors( params.m_number_of_clusters * m_n, 0 ),
+    m_duration{ omp_get_wtime() }
+  {
+    const auto nlinks = graph.m_links.size();
+    std::vector< T > triplets( nlinks * 2 , T{} );
+    size_t i = 0;
+    for( auto& l : graph.m_links )
+      {
+        triplets[i] = T( l.n1, l.n2, l.weight );
+        ++i;
+        triplets[i] = T( l.n2, l.n1, l.weight );
+        ++i;
+      }
+    m_weights.setFromTriplets( triplets.begin(), triplets.end() );
+
+    for( size_t i = 0; i < m_n; ++ i )
+       {
+         m_diagonal[ i ] = m_weights.col(i).sum();
+       }
+    # ifdef DEBUG
+    print_weight_matrix(m_weights);
+    # endif
+    extract_eigen_vectors();
+    kmean_in_coordinate_space();
+    m_duration = omp_get_wtime() - m_duration;
+  }
+
   spectral_clusterer::spectral_clusterer(
       real* input, size_t number_of_points,
       size_t dimension_of_points,
       const parameters& params )
   : m_input{ input }, m_n{ number_of_points }, m_d{ dimension_of_points },
-    m_params{ params }, m_weights( m_n, m_n ), diagonal( m_n, 0 ), m_diagonal( m_n, m_n ),
+    m_params{ params }, m_weights( m_n, m_n ), m_diagonal( m_n, 0 ),
     m_eigenvectors( params.m_number_of_clusters * m_n, 0 ), m_duration{ omp_get_wtime() }
   {
     build_weight_matrix();
@@ -464,7 +505,7 @@ BEGIN_PROJECT_NAMESPACE
 
     for( size_t i = 0; i < m_n; ++ i )
       {
-        diagonal[ i ] = m_weights.col(i).sum();
+        m_diagonal[ i ] = m_weights.col(i).sum();
       }
 # ifdef DEBUG
     print_weight_matrix(m_weights);
@@ -522,14 +563,14 @@ BEGIN_PROJECT_NAMESPACE
       {
         Eigen::SparseMatrix<real> laplacian = - m_weights;
         for( size_t i = 0; i < m_n; ++ i )
-          laplacian.coeffRef( i, i ) = diagonal[ i ];
+          laplacian.coeffRef( i, i ) = m_diagonal[ i ];
         compute_first_eigenvectors( laplacian );
       }
     else
       {
         Eigen::SparseMatrix<real> laplacian( m_n, m_n );
         std::list< T > triplets;
-        std::vector< real > inv_sqrt_diagonal = diagonal;
+        std::vector< real > inv_sqrt_diagonal = m_diagonal;
         for( size_t i = 0; i < m_n; ++ i )
           {
             triplets.push_back( T( i, i, real(1.0 ) ) );

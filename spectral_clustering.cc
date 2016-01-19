@@ -209,6 +209,35 @@ BEGIN_PROJECT_NAMESPACE
       LOG( info, "SKG_LRW_5 took " << alg.get_execution_duration() );
     }
 
+    {
+      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
+
+      const auto internal = real(1.0);
+      const auto external = real(0.8);
+      const auto bridge   = real(0.2);
+
+      similarity_graph graph;
+      graph.m_node_number = 16;
+
+
+      graph.m_links = {
+          {0,1,internal}, {1,2,internal}, {2,3,internal}, {3,4,internal},
+          {4,5,internal}, {5,6,internal}, {6,7,internal}, {7,8,internal},
+
+          {0,9,bridge},
+
+          {8,9,external}, {9,10,external}, {10,11,external}, {11,12,external},
+          {12,13,external}, {13,14,external}, {14,15,external}, {15,8,external}
+      };
+
+      spectral_clusterer alg( graph, params );
+      LOG( info, "Graph LRW took " << alg.get_execution_duration() );
+      for( size_t i = 0; i < graph.m_node_number; ++ i )
+        {
+          std::cout << "node " << std::setw(3) << i << ": " << alg.get_group( i ) << "\n";
+        }
+    }
+
     return EXIT_SUCCESS;
   }
 

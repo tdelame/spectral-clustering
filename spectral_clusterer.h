@@ -42,6 +42,23 @@ BEGIN_PROJECT_NAMESPACE
    *   L * u = lambda * u
    *
    */
+
+  struct similarity_graph {
+
+    struct link {
+      link();
+      link( size_t n1, size_t n2, real w );
+
+      size_t n1;
+      size_t n2;
+      real weight;
+    };
+
+    std::vector< link > m_links;
+    size_t m_node_number;
+  };
+
+
   class spectral_clusterer {
   public:
     struct parameters {
@@ -66,6 +83,10 @@ BEGIN_PROJECT_NAMESPACE
 
       parameters();
     };
+
+    spectral_clusterer(
+      similarity_graph& graph,
+      const parameters& params = parameters{} );
 
     spectral_clusterer(
       real* input,
@@ -94,8 +115,7 @@ BEGIN_PROJECT_NAMESPACE
     const size_t m_d;
     parameters m_params;
     Eigen::SparseMatrix<real> m_weights;
-    std::vector<real> diagonal;
-    Eigen::SparseMatrix<real> m_diagonal;
+    std::vector<real> m_diagonal;
     std::vector<real> m_eigenvectors;
     std::vector<size_t> m_groups;
     real m_duration;
