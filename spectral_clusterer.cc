@@ -131,150 +131,163 @@ BEGIN_PROJECT_NAMESPACE
    */
 
   static void print_2d_graph( Eigen::SparseMatrix<real>& weight, real* input_points )
-  {
-    auto source = input_points;
+    {
+      auto source = input_points;
 
-    auto minx = source[0];
-    auto maxx = minx;
-    auto miny = source[1];
-    auto maxy = miny;
-    source += 2;
+      auto minx = source[0];
+      auto maxx = minx;
+      auto miny = source[1];
+      auto maxy = miny;
+      source += 2;
 
-    for( size_t i = 1; i < weight.cols(); ++ i, source += 2 )
-      {
-        auto x = source[0];
-        if( minx > x )
-          minx = x;
-        else if( maxx < x )
-          maxx = x;
-
-        auto y = source[1];
-        if( miny > y )
-          miny = y;
-        else if ( maxy < y )
-          maxy = y;
-      }
-    auto scale = 800.0 / std::max( maxx - minx, maxy - miny );
-
-
-    std::ofstream output( "output/similarity_graph.ps");
-    output
-      << "%!PS-Adobe-3.0 EPSF-3.0\n"
-      << "%%BoundingBox: -5 -5 800 800\n"
-      << "/l {rlineto} def\n"
-      << "/m {rmoveto} def\n"
-      << "/c { .25 sub exch .25 sub exch 1.5 0 360 arc fill } def\n"
-      << "/s { moveto -2 0 m 2 2 l 2 -2 l -2 -2 l closepath "
-      << " gsave 1 setgray fill grestore gsave 3 setlinewidth"
-      << " 1 setgray stroke grestore 0 setgray stroke } def\n";
-
-    output << "0.2 0.5 0.8 setrgbcolor\n";
-    for( size_t i = 0; i < weight.cols(); ++ i )
-      {
-        output << input_points[ i << 1 ] * scale << " " << input_points[ i * 2 + 1 ] * scale << " c\n";
-      }
-
-    output << "0.2 0.8 0.1 setrgbcolor\n";
-    for( int k = 0; k < weight.outerSize(); ++ k )
-       for( Eigen::SparseMatrix<real>::InnerIterator it(weight,k); it; ++ it )
-         {
-           if( it.row() > it.col() ) continue;
-           output << "newpath " << input_points[ it.row() * 2 ] * scale << " " << input_points[ it.row() * 2 + 1] * scale << " moveto "
-                  << input_points[ it.col() * 2 ] * scale << " " << input_points[ it.col() * 2 + 1] * scale << " lineto stroke\n";
-         }
-    output << "showpage\n";
-    output.close();
-  }
-
-  static void print_kmean_on_2d_eigenvectors( std::vector<real>& eigenvectors,  omp_kmean& alg )
-  {
-    auto source = eigenvectors.data();
-
-    auto minx = source[0];
-    auto maxx = minx;
-    auto miny = source[1];
-    auto maxy = miny;
-
-    for( size_t i = 1; i < alg.get_number_of_points(); ++ i, source += 2 )
-      {
-        auto x = source[0];
-        if( minx > x )
-          minx = x;
-        else if( maxx < x )
-          maxx = x;
-
-        auto y = source[1];
-        if( miny > y )
-          miny = y;
-        else if ( maxy < y )
-          maxy = y;
-      }
-    auto scale = 800.0 / std::max( maxx - minx, maxy - miny );
-    std::ofstream output( "output/eigenvector_kmean.ps");
-    output
-      << "%!PS-Adobe-3.0 EPSF-3.0\n"
-      << "%%BoundingBox: " << minx * scale<< " " << miny* scale << " " << maxx* scale << " " << maxy * scale<< "\n"
-      << "/l {rlineto} def\n"
-      << "/m {rmoveto} def\n"
-      << "/c { .25 sub exch .25 sub exch 1.5 0 360 arc fill } def\n"
-      << "/centroid { .25 sub exch .25 sub exch 2.5 0 360 arc fill } def\n"
-      << "/s { moveto -2 0 m 2 2 l 2 -2 l -2 -2 l closepath "
-      << " gsave 1 setgray fill grestore gsave 3 setlinewidth"
-      << " 1 setgray stroke grestore 0 setgray stroke } def\n";
-
-
-    for( size_t i = 0; i < alg.get_number_of_points(); ++ i )
-      {
-        if( alg.get_group( i ) )
-          output << "0.2 0.4 0.8 setrgbcolor\n";
-        else output << "0.2 0.8 0.4 setrgbcolor\n";
-        output << eigenvectors[ i * 2 ]* scale << " " << eigenvectors[ i * 2 + 1]* scale << " c\n";
-      }
-    for( size_t k = 0; k < alg.get_number_of_clusters(); ++ k )
-      {
-        output << "0.8 0.4 0.2 setrgbcolor\n";
-        output << alg.get_centroid( k )[0]* scale << " " << alg.get_centroid( k )[1]* scale << " centroid\n";
-        std::cout << "centroid " << k << ": " << alg.get_centroid( k )[0] << " " << alg.get_centroid( k )[1] << std::endl;
-      }
-
-    output << "showpage\n";
-    output.close();
-  }
-
-  static void print_weight_matrix( Eigen::SparseMatrix<real>& weights )
-  {
-    typedef unsigned char uchar;
-    auto max_weight = real(0);
-    auto min_weight = REAL_MAX;
-    for( int k = 0; k < weights.outerSize(); ++ k )
-      for( Eigen::SparseMatrix<real>::InnerIterator it(weights,k); it; ++ it )
+      for( size_t i = 1; i < weight.cols(); ++ i, source += 2 )
         {
-          max_weight = std::max( max_weight, it.value() );
-          min_weight = std::min( min_weight, it.value() );
+          auto x = source[0];
+          if( minx > x )
+            minx = x;
+          else if( maxx < x )
+            maxx = x;
+
+          auto y = source[1];
+          if( miny > y )
+            miny = y;
+          else if ( maxy < y )
+            maxy = y;
+        }
+      auto scale = 800.0 / std::max( maxx - minx, maxy - miny );
+
+
+      std::ofstream output( "output/similarity_graph.ps");
+      output
+        << "%!PS-Adobe-3.0 EPSF-3.0\n"
+        << "%%BoundingBox: -5 -5 800 800\n"
+        << "/l {rlineto} def\n"
+        << "/m {rmoveto} def\n"
+        << "/c { .25 sub exch .25 sub exch 1.5 0 360 arc fill } def\n"
+        << "/s { moveto -2 0 m 2 2 l 2 -2 l -2 -2 l closepath "
+        << " gsave 1 setgray fill grestore gsave 3 setlinewidth"
+        << " 1 setgray stroke grestore 0 setgray stroke } def\n";
+
+      output << "0.2 0.5 0.8 setrgbcolor\n";
+      for( size_t i = 0; i < weight.cols(); ++ i )
+        {
+          output << input_points[ i << 1 ] * scale << " " << input_points[ i * 2 + 1 ] * scale << " c\n";
         }
 
-    uchar* pixels = new uchar[ weights.cols() * weights.cols() * 3 ];
-    std::memset( pixels, uchar(255), weights.cols() * weights.cols() * 3);
-    real color[3];
-    for( int k = 0; k < weights.outerSize(); ++ k )
-      for( Eigen::SparseMatrix<real>::InnerIterator it(weights,k); it; ++ it )
+      auto min_similarity = REAL_MAX;
+      auto max_similarity = -REAL_MAX;
+      for( int k = 0; k < weight.outerSize(); ++ k )
+        for( Eigen::SparseMatrix<real>::InnerIterator it(weight,k); it; ++ it )
+          {
+            min_similarity = std::min( min_similarity, it.value() );
+            max_similarity = std::max( max_similarity, it.value() );
+          }
+
+      real color[3];
+      for( int k = 0; k < weight.outerSize(); ++ k )
+         for( Eigen::SparseMatrix<real>::InnerIterator it(weight,k); it; ++ it )
+           {
+             if( it.row() > it.col() ) continue;
+
+             set_color( it.value(), min_similarity, max_similarity, color );
+
+             output << color[0] << " " << color[1] << " " << color[2] <<" setrgbcolor\n";
+             output << "newpath " << input_points[ it.row() * 2 ] * scale << " " << input_points[ it.row() * 2 + 1] * scale << " moveto "
+                    << input_points[ it.col() * 2 ] * scale << " " << input_points[ it.col() * 2 + 1] * scale << " lineto stroke\n";
+           }
+      output << "showpage\n";
+      output.close();
+    }
+
+    static void print_kmean_on_2d_eigenvectors( std::vector<real>& eigenvectors,  omp_kmean& alg )
+    {
+      auto source = eigenvectors.data();
+
+      auto minx = source[0];
+      auto maxx = minx;
+      auto miny = source[1];
+      auto maxy = miny;
+
+      for( size_t i = 1; i < alg.get_number_of_points(); ++ i, source += 2 )
         {
-          set_color( it.value(), min_weight, max_weight, color );
-          auto dest = pixels + (it.row() * weights.cols() + it.col()) * 3;
-          dest[0] = uchar( color[0] * 255.0 );
-          dest[1] = uchar( color[1] * 255.0 );
-          dest[2] = uchar( color[2] * 255.0 );
+          auto x = source[0];
+          if( minx > x )
+            minx = x;
+          else if( maxx < x )
+            maxx = x;
+
+          auto y = source[1];
+          if( miny > y )
+            miny = y;
+          else if ( maxy < y )
+            maxy = y;
         }
-    std::ofstream ppm ("output/weight_matrix.ppm", std::ios::binary);
-    ppm << "P6\n" << int(weights.cols()) << " " << int(weights.cols()) << "\n255\n";
-    auto dest = pixels;
-    for( size_t i = weights.cols() * weights.cols() * 3; i; --i, ++ dest )
-      {
-        ppm << *dest;
-      }
-    delete[] pixels;
-    ppm.close();
-  }
+      auto scale = 800.0 / std::max( maxx - minx, maxy - miny );
+      std::ofstream output( "output/eigenvector_kmean.ps");
+      output
+        << "%!PS-Adobe-3.0 EPSF-3.0\n"
+        << "%%BoundingBox: " << minx * scale<< " " << miny* scale << " " << maxx* scale << " " << maxy * scale<< "\n"
+        << "/l {rlineto} def\n"
+        << "/m {rmoveto} def\n"
+        << "/c { .25 sub exch .25 sub exch 1.5 0 360 arc fill } def\n"
+        << "/centroid { .25 sub exch .25 sub exch 2.5 0 360 arc fill } def\n"
+        << "/s { moveto -2 0 m 2 2 l 2 -2 l -2 -2 l closepath "
+        << " gsave 1 setgray fill grestore gsave 3 setlinewidth"
+        << " 1 setgray stroke grestore 0 setgray stroke } def\n";
+
+
+      real color[3];
+      for( size_t i = 0; i < alg.get_number_of_points(); ++ i )
+        {
+          set_color( alg.get_group(i), 0, alg.get_number_of_clusters(), color );
+          output << color[0] << " " << color[1] << " " << color[2] << " setrgbcolor\n";
+          output << eigenvectors[ i * 2 ]* scale << " " << eigenvectors[ i * 2 + 1]* scale << " c\n";
+        }
+      for( size_t k = 0; k < alg.get_number_of_clusters(); ++ k )
+        {
+          output << "0.8 0.4 0.2 setrgbcolor\n";
+          output << alg.get_centroid( k )[0]* scale << " " << alg.get_centroid( k )[1]* scale << " centroid\n";
+          std::cout << "centroid " << k << ": " << alg.get_centroid( k )[0] << " " << alg.get_centroid( k )[1] << std::endl;
+        }
+
+      output << "showpage\n";
+      output.close();
+    }
+
+    static void print_weight_matrix( Eigen::SparseMatrix<real>& weights )
+    {
+      typedef unsigned char uchar;
+      auto max_weight = real(0);
+      auto min_weight = REAL_MAX;
+      for( int k = 0; k < weights.outerSize(); ++ k )
+        for( Eigen::SparseMatrix<real>::InnerIterator it(weights,k); it; ++ it )
+          {
+            max_weight = std::max( max_weight, it.value() );
+            min_weight = std::min( min_weight, it.value() );
+          }
+
+      uchar* pixels = new uchar[ weights.cols() * weights.cols() * 3 ];
+      std::memset( pixels, uchar(255), weights.cols() * weights.cols() * 3);
+      real color[3];
+      for( int k = 0; k < weights.outerSize(); ++ k )
+        for( Eigen::SparseMatrix<real>::InnerIterator it(weights,k); it; ++ it )
+          {
+            set_color( it.value(), min_weight, max_weight, color );
+            auto dest = pixels + (it.row() * weights.cols() + it.col()) * 3;
+            dest[0] = uchar( color[0] * 255.0 );
+            dest[1] = uchar( color[1] * 255.0 );
+            dest[2] = uchar( color[2] * 255.0 );
+          }
+      std::ofstream ppm ("output/weight_matrix.ppm", std::ios::binary);
+      ppm << "P6\n" << int(weights.cols()) << " " << int(weights.cols()) << "\n255\n";
+      auto dest = pixels;
+      for( size_t i = weights.cols() * weights.cols() * 3; i; --i, ++ dest )
+        {
+          ppm << *dest;
+        }
+      delete[] pixels;
+      ppm.close();
+    }
 
   spectral_clusterer::parameters::parameters()
   : m_graph_mode{ DISTANCE_GRAPH }, m_laplacian_mode{ LAPLACIAN },
