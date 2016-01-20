@@ -295,34 +295,15 @@ BEGIN_PROJECT_NAMESPACE
     m_number_of_neighbors{ 5 }, m_number_of_clusters{ 3 }
   {}
 
-  similarity_graph::link::link()
-    : n1{0}, n2{0}, weight{0}
-  {}
-
-  similarity_graph::link::link( size_t n1, size_t n2, real w )
-    : n1{n1}, n2{n2}, weight{w}
-  {}
-
-
   spectral_clusterer::spectral_clusterer(
-      similarity_graph& graph,
+      weight_matrix& graph,
       const parameters& params)
-  : m_input{ nullptr }, m_n{ graph.m_node_number }, m_d{ 0 },
+  : m_input{ nullptr }, m_n{ graph.m_size }, m_d{ 0 },
     m_params{ params }, m_weights( m_n, m_n ), m_diagonal( m_n, 0 ),
     m_eigenvectors( params.m_number_of_clusters * m_n, 0 ),
     m_duration{ omp_get_wtime() }
   {
-    const auto nlinks = graph.m_links.size();
-    std::vector< T > triplets( nlinks * 2 , T{} );
-    size_t i = 0;
-    for( auto& l : graph.m_links )
-      {
-        triplets[i] = T( l.n1, l.n2, l.weight );
-        ++i;
-        triplets[i] = T( l.n2, l.n1, l.weight );
-        ++i;
-      }
-    m_weights.setFromTriplets( triplets.begin(), triplets.end() );
+    m_weights.setFromTriplets( graph.m_coeffs.begin(), graph.m_coeffs.end() );
 
     for( size_t i = 0; i < m_n; ++ i )
        {

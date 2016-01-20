@@ -150,64 +150,64 @@ BEGIN_PROJECT_NAMESPACE
     params.m_distance_threshold = data.get_diagonal() * 0.1;
     params.m_number_of_neighbors = 8;
 
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/1_disk_DG_L_optimal.ps");
-      LOG( info, "DG_L_optimal took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/2_disk_DG_LS_optimal.ps");
-      LOG( info, "DG_LS_optimal took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/3_disk_DG_LRW_optimal.ps");
-      LOG( info, "DG_LRW_optimal took " << alg.get_execution_duration() );
-    }
-
-    params.m_graph_mode = spectral_clusterer::parameters::KNN_GRAPH;
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/4_disk_KG_L_5_param.ps");
-      LOG( info, "KG_L_5 took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/5_disk_KG_LS_5_param.ps");
-      LOG( info, "KG_LS_5 took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/6_disk_KG_LRW_5_param.ps");
-      LOG( info, "KG_LRW_5 took " << alg.get_execution_duration() );
-    }
-
-    params.m_graph_mode = spectral_clusterer::parameters::SYMMETRIC_KNN_GRAPH;
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/7_disk_SKG_L_5_param.ps");
-      LOG( info, "SKG_L_5 took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/8_disk_SKG_LS_5_param.ps");
-      LOG( info, "SKG_LS_5 took " << alg.get_execution_duration() );
-    }
-    {
-      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
-      spectral_clusterer alg( data, data.get_size(), 2, params );
-      save_results( data, alg, "output/9_disk_SKG_LRW_5_param.ps");
-      LOG( info, "SKG_LRW_5 took " << alg.get_execution_duration() );
-    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/1_disk_DG_L_optimal.ps");
+//      LOG( info, "DG_L_optimal took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/2_disk_DG_LS_optimal.ps");
+//      LOG( info, "DG_LS_optimal took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/3_disk_DG_LRW_optimal.ps");
+//      LOG( info, "DG_LRW_optimal took " << alg.get_execution_duration() );
+//    }
+//
+//    params.m_graph_mode = spectral_clusterer::parameters::KNN_GRAPH;
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/4_disk_KG_L_5_param.ps");
+//      LOG( info, "KG_L_5 took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/5_disk_KG_LS_5_param.ps");
+//      LOG( info, "KG_LS_5 took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/6_disk_KG_LRW_5_param.ps");
+//      LOG( info, "KG_LRW_5 took " << alg.get_execution_duration() );
+//    }
+//
+//    params.m_graph_mode = spectral_clusterer::parameters::SYMMETRIC_KNN_GRAPH;
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/7_disk_SKG_L_5_param.ps");
+//      LOG( info, "SKG_L_5 took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::SYMMETRIC_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/8_disk_SKG_LS_5_param.ps");
+//      LOG( info, "SKG_LS_5 took " << alg.get_execution_duration() );
+//    }
+//    {
+//      params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
+//      spectral_clusterer alg( data, data.get_size(), 2, params );
+//      save_results( data, alg, "output/9_disk_SKG_LRW_5_param.ps");
+//      LOG( info, "SKG_LRW_5 took " << alg.get_execution_duration() );
+//    }
 
     {
       params.m_laplacian_mode = spectral_clusterer::parameters::RANDOM_WALK_LAPLACIAN;
@@ -216,23 +216,27 @@ BEGIN_PROJECT_NAMESPACE
       const auto external = real(0.8);
       const auto bridge   = real(0.2);
 
-      similarity_graph graph;
-      graph.m_node_number = 16;
+      weight_matrix weights;
+      weights.m_size = 16;
 
 
-      graph.m_links = {
+      weights.m_coeffs = {
           {0,1,internal}, {1,2,internal}, {2,3,internal}, {3,4,internal},
           {4,5,internal}, {5,6,internal}, {6,7,internal}, {7,8,internal},
+          {1,0,internal}, {2,1,internal}, {3,2,internal}, {4,3,internal},
+          {5,4,internal}, {6,5,internal}, {7,6,internal}, {8,7,internal},
 
-          {0,9,bridge},
+          {0,9,bridge}, {9,0,bridge},
 
           {8,9,external}, {9,10,external}, {10,11,external}, {11,12,external},
-          {12,13,external}, {13,14,external}, {14,15,external}, {15,8,external}
+          {12,13,external}, {13,14,external}, {14,15,external}, {15,8,external},
+          {9,8,external}, {10,9,external}, {11,10,external}, {12,11,external},
+          {13,12,external}, {14,13,external}, {15,14,external}, {8,15,external}
       };
 
-      spectral_clusterer alg( graph, params );
+      spectral_clusterer alg( weights, params );
       LOG( info, "Graph LRW took " << alg.get_execution_duration() );
-      for( size_t i = 0; i < graph.m_node_number; ++ i )
+      for( size_t i = 0; i < weights.m_size; ++ i )
         {
           std::cout << "node " << std::setw(3) << i << ": " << alg.get_group( i ) << "\n";
         }

@@ -43,19 +43,13 @@ BEGIN_PROJECT_NAMESPACE
    *
    */
 
-  struct similarity_graph {
-
-    struct link {
-      link();
-      link( size_t n1, size_t n2, real w );
-
-      size_t n1;
-      size_t n2;
-      real weight;
-    };
-
-    std::vector< link > m_links;
-    size_t m_node_number;
+  /**
+   * A simple structure to pass directly the weight matrix data.
+   * The coefficients are used to fill in the clusterer sparse matrix.
+   */
+  struct weight_matrix {
+    std::vector< Eigen::Triplet<real> > m_coeffs;
+    size_t m_size;
   };
 
 
@@ -85,7 +79,7 @@ BEGIN_PROJECT_NAMESPACE
     };
 
     spectral_clusterer(
-      similarity_graph& graph,
+      weight_matrix& graph,
       const parameters& params = parameters{} );
 
     spectral_clusterer(
